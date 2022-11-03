@@ -1,109 +1,143 @@
 const fs = require("fs")
 
+
 class Contenedor {
 
-    constructor(url){
+    constructor(url) {
         this.url = url
     }
 
-    save(producto) {
-        let data = this.getAll()
-        let id = 0
-        let arrProd
-        if (data == "") {
-            arrProd = []
-        } else {
-            arrProd = JSON.parse(data)
-        }
-        
-        if(arrProd.length == 0){
-            id = 1
-        } else{
-            id = arrProd[arrProd.length-1].id + 1
+    async getAll() {
+        try {
+            let data = await fs.promises.readFile(this.url, 'utf-8')
+            return data 
+        } catch (error) {
+            return []
         }
 
-        
-        let newProd = {...producto, id: id}
-
-        arrProd.push(newProd)
-
-        fs.writeFileSync(this.url, JSON.stringify(arrProd, null, 2))
-
-        console.log("id: " + id);
     }
 
-    getByID(idProd) {
-        let data = JSON.parse(fs.readFileSync('./productos.txt', 'utf-8'))
-        let product = data.filter(prod => prod.id == idProd)
+    async save(producto) {
+        try {
+            let data = await fs.promises.readFile(this.url, 'utf-8')
+            let id = 0
+            let arrProd = []
+
+            if (data.length == 0) {
+                id = 1
+                console.log(id + "----------> id");
+            } else {
+                
+                arrProd = JSON.parse(data)
+                id = arrProd[arrProd.length - 1].id + 1
+                console.log(id + "----------> id");
+            }
+
+            let newProd = { ...producto, id: id }
+
+            arrProd.push(newProd)
+
+            try {
+                await fs.promises.writeFile(this.url, JSON.stringify(arrProd, null, 2))
+                console.log("-------escribi el archivo---------");
+                return id
+            } catch (error) {
+                console.log(error);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+
+
+
+    }
+
+    async getByID(idProd) {
+        let data = await this.getAll()
+        let arr = JSON.parse(data)
+        let product = arr.filter(prod => prod.id == idProd)
         console.log("Producto filtrado: " + JSON.stringify(product, null, 2));
     }
 
-    getAll() {
-        let data = fs.readFileSync(this.url, 'utf-8')
-        return data
-    }
-
-    deleteByID(idProd) {
-        let data = JSON.parse(fs.readFileSync(this.url, 'utf-8'))
-        let prodDeleted = data.filter(prod => prod.id !== idProd)
+    async deleteByID(idProd) {
+        let data = await this.getAll()
+        let arr = JSON.parse(data)
+        let prodDeleted = arr.filter(prod => prod.id !== idProd)
         console.log(prodDeleted);
-        fs.writeFileSync(this.url, JSON.stringify(prodDeleted, null, 2))
+        try {
+            await fs.promises.writeFile(this.url, JSON.stringify(prodDeleted, null, 2))
+        } catch (error) {
+            console.log(error);
+        }
+
     }
 
-    deleteAll() {
-        fs.writeFileSync(this.url, "")
+    async deleteAll() {
+        try {
+            await fs.promises.writeFile(this.url, "")
+        } catch (error) {
+            console.log(error);
+        }
+
         console.log("Todos los productos han sido eliminados.");
     }
 
 }
 
-const productos = new Contenedor ("./productos.txt")
 
-const producto = {
-    title:"algo1",
-    price:125,
-    thumbnail:"algomas1"
+const productos = new Contenedor("./productos.txt")
+
+const producto1 = {
+    title: "algo1",
+    price: 125,
+    thumbnail: "algomas1"
 }
 
 const producto2 = {
-    title:"algo2",
-    price:258,
-    thumbnail:"algomas2"
+    title: "algo2",
+    price: 258,
+    thumbnail: "algomas2"
 }
 
 const producto3 = {
-    title:"algo3",
-    price:358,
-    thumbnail:"algomas3"
+    title: "algo3",
+    price: 358,
+    thumbnail: "algomas3"
 }
 
-//PRODUCTOS GUARDADOS EN ARCHIVO E INFORME DE ID
+console.log("Entrando al primer save ¨¨¨¨V");
+productos.save(producto1)
+setTimeout(() => {
+    console.log("Entrando al segundo save ¨¨¨¨V");
+    productos.save(producto2)
+}, 1000)
 
-console.log("ID DE LOS PRODUCTOS-----------------------------------------------------");
-productos.save(producto);
-productos.save(producto2);
-productos.save(producto3);
+setTimeout(() => {
+    console.log("Entrando al tercer save ¨¨¨¨V");
+    productos.save(producto3)
+}, 1050)
 
-//TODOS LOS PRODUCTOS
+setTimeout(() => {
+    console.log("Contenido del Archivo ¨¨¨¨V");
+    console.log(productos.getAll());
+}, 1100)
 
-console.log("INFORME DE TODOS LOS PRODUCTOS EN EL ARCHIVO---------------------------------------------");
-console.log(productos.getAll());
+setTimeout(() => {
+    console.log("Aplicando filtro por ID ¨¨¨¨V")
+    productos.getByID(2)
 
+}, 1150)
 
-//PRODUCTO FILTRADO
+setTimeout(() => {
+    console.log("Aplicando borrado por ID ¨¨¨V")
+    productos.deleteByID(1)
+}, 1200)
 
-console.log("PRODUCTO BUSCADO POR ID = 3--------------------------------------------------------");
-productos.getByID(3)
+setTimeout(() => {
+    console.log("Borrando el Archivo ¨¨¨¨¨V");
+    productos.deleteAll()
+}, 6000);
 
-//PRODUCTO ELIMINADO
-
-console.log("PRODUCTO ELIMINADO POR ID = 2------------------------------------------------------");
-productos.deleteByID(2)
-
-//ARCHIVO ELIMINADO
-
-console.log("ARCHIVO ELIMINADO-------------------------------------------------------");
-productos.deleteAll()
 
 
 
