@@ -1,0 +1,23 @@
+{
+  "name": "rodriguez-ivan",
+  "version": "1.0.0",
+  "description": "",
+  "main": "Contenedor.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ivan-e-rodriguez/Desafio-Backend-Rodriguez-Ivan.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ivan-e-rodriguez/Desafio-Backend-Rodriguez-Ivan/issues"
+  },
+  "homepage": "https://github.com/ivan-e-rodriguez/Desafio-Backend-Rodriguez-Ivan#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
