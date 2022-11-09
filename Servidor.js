@@ -20,6 +20,8 @@ class Contenedor {
         return product
     }
 
+//--------------------------------------------------------------------------------------------------------------------------    
+
     async save(producto) {
         try {
             let data = await fs.promises.readFile(this.url, 'utf-8')
@@ -80,7 +82,7 @@ class Contenedor {
 
 }
 
-//-----------------------------------------INICIO SERVIDOR-----------------------------------------
+//-----------------------------------------INICIO SERVIDOR-----------------------------------------------------------------
 
 const express = require('express')
 
@@ -92,7 +94,7 @@ const server = app.listen(PORT, ()=>{
     console.log('Conectando al servidor');
 })
 
-//-----------------------------------------GET PRODUCTOS------------------------------------------
+//-----------------------------------------GET PRODUCTOS-------------------------------------------------------------------
 
 app.get('/productos', (req, res) =>{
     const cont1 = new Contenedor('productos.txt')
@@ -100,7 +102,7 @@ app.get('/productos', (req, res) =>{
     res.send(JSON.stringify(prodList))
 })
 
-//----------------------------------------GET PRODUCTO RANDOM-------------------------------------
+//----------------------------------------GET PRODUCTO RANDOM--------------------------------------------------------------
 
 app.get('/productoRandom', (req, res) =>{
     const num = Math.floor(Math.random()*3 + 1);
