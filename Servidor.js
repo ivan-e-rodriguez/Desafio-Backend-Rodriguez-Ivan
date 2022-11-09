@@ -1,5 +1,3 @@
-
-
 const fs = require("fs")
 
 
@@ -9,14 +7,17 @@ class Contenedor {
         this.url = url
     }
 
-    async getAll() {
-        try {
-            let data = await fs.promises.readFile(this.url, 'utf-8')
-            return data 
-        } catch (error) {
-            return []
-        }
+//----------------------------------------USE FUNCIONES SINCRONICAS PORQUE ME RESULTO MAS SENCILLO------------------------
 
+    getAll() {
+        let data = fs.readFileSync(this.url, 'utf-8')
+        return data
+    }
+
+    getByID(idProd) {
+        let data = JSON.parse(fs.readFileSync(this.url, 'utf-8'))
+        let product = data.filter(prod => prod.id == idProd)
+        return product
     }
 
     async save(producto) {
@@ -54,13 +55,6 @@ class Contenedor {
 
     }
 
-    async getByID(idProd) {
-        let data = await this.getAll()
-        let arr = JSON.parse(data)
-        let product = arr.filter(prod => prod.id == idProd)
-        console.log("Producto filtrado: " + JSON.stringify(product, null, 2));
-    }
-
     async deleteByID(idProd) {
         let data = await this.getAll()
         let arr = JSON.parse(data)
@@ -86,8 +80,31 @@ class Contenedor {
 
 }
 
+//-----------------------------------------INICIO SERVIDOR-----------------------------------------
 
+const express = require('express')
 
+const app = express()
 
+const PORT = 8080
 
+const server = app.listen(PORT, ()=>{
+    console.log('Conectando al servidor');
+})
 
+//-----------------------------------------GET PRODUCTOS------------------------------------------
+
+app.get('/productos', (req, res) =>{
+    const cont1 = new Contenedor('productos.txt')
+    const prodList = cont1.getAll()
+    res.send(JSON.stringify(prodList))
+})
+
+//----------------------------------------GET PRODUCTO RANDOM-------------------------------------
+
+app.get('/productoRandom', (req, res) =>{
+    const num = Math.floor(Math.random()*3 + 1);
+    const cont2 = new Contenedor('productos.txt')
+    const prod = cont2.getByID(num)
+    res.send('Producto random ' + JSON.stringify(prod))
+})
